@@ -3,11 +3,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserByIdDto } from './dto/update-user-by-id.dto';
+import {
+  FindAllUsersDto,
+  SortField,
+  SortOrder,
+} from './dto/find-all-users.dto';
 import mongoose, { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { hashPasswordHelper, comparePasswordHelper } from 'src/helpers/util';
-import aqp from 'api-query-params';
 import {
   CodeAuthDto,
   CreateAuthDto,
@@ -69,26 +73,61 @@ export class UsersService {
     return { _id: user._id };
   }
 
-  async findAll(query: string, current: number, pageSize: number) {
-    const { filter, sort } = aqp(query);
+  async findAll(query: FindAllUsersDto) {
+    const {
+      current = '1',
+      pageSize = '10',
+      status,
+      sortField = SortField.CREATED_AT,
+      sortOrder = SortOrder.DESC,
+      search,
+    } = query;
 
-    if (filter.current) delete filter.current;
-    if (filter.pageSize) delete filter.pageSize;
+    // Convert string parameters to numbers
+    const currentPage = parseInt(current, 10);
+    const pageSizeNum = parseInt(pageSize, 10);
 
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+    // Build filter object
+    const filter: Record<string, any> = {};
 
-    const totalItems = (await this.userModel.find(filter)).length;
-    const totalPages = Math.ceil(totalItems / pageSize);
-    const skip = (current - 1) * pageSize;
+    // Add status filter if provided
+    if (status) {
+      filter.status = status;
+    }
 
+    // Add search filter if provided
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    // Build sort object
+    const sort: Record<string, 1 | -1> = {};
+    sort[sortField] = sortOrder === SortOrder.ASC ? 1 : -1;
+
+    // Calculate pagination
+    const totalItems = await this.userModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalItems / pageSizeNum);
+    const skip = (currentPage - 1) * pageSizeNum;
+
+    // Execute query
     const results = await this.userModel
       .find(filter)
-      .limit(pageSize)
+      .limit(pageSizeNum)
       .skip(skip)
       .select('-password')
-      .sort(sort as any);
-    return { results, totalItems, totalPages };
+      .sort(sort);
+
+    return {
+      results,
+      totalItems,
+      totalPages,
+      current: currentPage,
+      pageSize: pageSizeNum,
+    };
   }
 
   async findOne(id: string) {
@@ -150,7 +189,6 @@ export class UsersService {
   async updateById(id: string, updateUserByIdDto: UpdateUserByIdDto) {
     const {
       name,
-      email,
       password,
       phone,
       address,

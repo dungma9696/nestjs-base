@@ -2,6 +2,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserByIdDto } from './dto/update-user-by-id.dto';
+import { FindAllUsersDto } from './dto/find-all-users.dto';
 import {
   Controller,
   Post,
@@ -50,7 +51,12 @@ export class AdminUsersController {
 
   @Get()
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all users with pagination (Admin only)' })
+  @ApiOperation({
+    summary:
+      'Get all users with pagination, filtering, sorting and search (Admin only)',
+    description:
+      'Retrieve users with support for status filtering, sorting by creation/update date, and text search on name and email fields',
+  })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({
@@ -61,18 +67,40 @@ export class AdminUsersController {
     name: 'current',
     required: false,
     description: 'Current page number',
+    example: 1,
   })
   @ApiQuery({
     name: 'pageSize',
     required: false,
     description: 'Number of items per page',
+    example: 10,
   })
-  async findAll(
-    @Query() query: string,
-    @Query('current') current: string,
-    @Query('pageSize') pageSize: string,
-  ) {
-    const users = await this.usersService.findAll(query, +current, +pageSize);
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by user status (ACTIVE, INACTIVE)',
+    enum: ['ACTIVE', 'INACTIVE'],
+  })
+  @ApiQuery({
+    name: 'sortField',
+    required: false,
+    description: 'Sort field (createdAt, updatedAt)',
+    enum: ['createdAt', 'updatedAt'],
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    description: 'Sort order (asc, desc)',
+    enum: ['asc', 'desc'],
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search text for name, phone and email fields',
+    example: 'john',
+  })
+  async findAll(@Query() query: FindAllUsersDto) {
+    const users = await this.usersService.findAll(query);
     return ApiResponseData.ok(users);
   }
 
