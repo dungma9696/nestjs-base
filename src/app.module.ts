@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
+import { BannersModule } from './modules/banners/banners.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/passport/jwt-auth.guard';
 
@@ -22,6 +23,7 @@ import { CacheableMemory } from 'cacheable';
     AuthModule,
     UsersModule,
     FilesModule,
+    BannersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
