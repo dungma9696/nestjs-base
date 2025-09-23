@@ -169,20 +169,20 @@ export class AdminUsersController {
     return ApiResponseData.ok(user);
   }
 
-  @Patch()
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Update any user information (Admin only)' })
-  @ApiResponse({ status: 200, description: 'User updated successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Admin access required',
-  })
-  async update(@Body() updateUserDto: UpdateUserDto) {
-    const user = await this.usersService.update(updateUserDto);
-    return ApiResponseData.ok(user);
-  }
+  // @Patch()
+  // @ApiBearerAuth('JWT-auth')
+  // @ApiOperation({ summary: 'Update any user information (Admin only)' })
+  // @ApiResponse({ status: 200, description: 'User updated successfully' })
+  // @ApiResponse({ status: 400, description: 'Bad request' })
+  // @ApiResponse({ status: 401, description: 'Unauthorized' })
+  // @ApiResponse({
+  //   status: 403,
+  //   description: 'Forbidden - Admin access required',
+  // })
+  // async update(@Body() updateUserDto: UpdateUserDto) {
+  //   const user = await this.usersService.update(updateUserDto);
+  //   return ApiResponseData.ok(user);
+  // }
 
   @Patch(':id')
   @ApiBearerAuth('JWT-auth')
