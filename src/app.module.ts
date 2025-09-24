@@ -7,6 +7,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
 import { BannersModule } from './modules/banners/banners.module';
+import { GenresModule } from './modules/genres/genres.module';
+import { MoviesModule } from './modules/movies/movies.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
+import { ShowtimesModule } from './modules/showtimes/showtimes.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { DiscountsModule } from './modules/discounts/discounts.module';
+import { NewsModule } from './modules/news/news.module';
+import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.module';
+import { RolesModule } from './modules/roles/roles.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/passport/jwt-auth.guard';
 
@@ -24,6 +33,15 @@ import { CacheableMemory } from 'cacheable';
     UsersModule,
     FilesModule,
     BannersModule,
+    GenresModule,
+    MoviesModule,
+    RoomsModule,
+    ShowtimesModule,
+    BookingsModule,
+    DiscountsModule,
+    NewsModule,
+    LoyaltyPointsModule,
+    RolesModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
