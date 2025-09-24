@@ -27,7 +27,7 @@ import {
 import { Public } from 'src/decorator/customize';
 
 @ApiTags('Files')
-@Controller('files')
+@Controller('admin/files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
