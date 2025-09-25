@@ -25,6 +25,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Public } from 'src/decorator/customize';
+import { ApiResponseData } from 'src/common/bases/api-response';
 
 @ApiTags('Files')
 @Controller('admin/files')
@@ -74,7 +75,7 @@ export class FilesController {
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('description') description?: string,
-  ): Promise<File> {
+  ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -88,7 +89,8 @@ export class FilesController {
       description,
     };
 
-    return this.filesService.create(fileData);
+    const result = await this.filesService.create(fileData);
+    return ApiResponseData.ok(result);
   }
 
   @Get(':id')
